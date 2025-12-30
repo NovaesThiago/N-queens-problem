@@ -7,7 +7,8 @@ import argparse
 from state import NQueensState
 from heuristics import attacking_pairs_heuristic
 from algorithms import AStarSearch, GreedySearch
-from utils import print_solution_board, validate_solution, create_results_table
+from utils import print_solution_board, validate_solution, create_results_table, save_results_to_file
+from visualization import ResultsVisualizer
 
 def solve_n_queens(n: int, algorithms: list = ['astar', 'greedy']) -> dict:
     """
@@ -76,7 +77,7 @@ def solve_n_queens(n: int, algorithms: list = ['astar', 'greedy']) -> dict:
                            results['A*'].solution.positions != result_greedy.solution.positions):
                 print_solution_board(result_greedy.solution.positions)
     
-    return results
+    return {n: results}  # Retorna no formato esperado pelos gráficos
 
 def main():
     """Função principal."""
@@ -88,12 +89,15 @@ Exemplos:
   python main.py 8                    # Resolve para n=8 com ambos algoritmos
   python main.py 8 --algorithm astar  # Usa apenas A*
   python main.py 8 --algorithm greedy # Usa apenas Busca Gulosa
+  python main.py 8 --plot             # Gera gráficos da solução
         """
     )
     
     parser.add_argument('n', type=int, help='Número de rainhas (tamanho do tabuleiro)')
     parser.add_argument('--algorithm', choices=['astar', 'greedy', 'both'], 
                        default='both', help='Algoritmo a usar (padrão: ambos)')
+    parser.add_argument('--plot', action='store_true', help='Gera gráficos da solução')
+    parser.add_argument('--save', action='store_true', help='Salva resultados em arquivo')
     
     args = parser.parse_args()
     
@@ -123,11 +127,34 @@ Exemplos:
         print("RESUMO COMPARATIVO")
         print(f"{'='*60}")
         
-        for algo_name, result in results.items():
+        for algo_name, result in results[args.n].items():
             if result.solution_found:
                 print(f"{algo_name:<15} | ✓ Solução | {result.states_explored:>12,} estados | {result.execution_time:>7.3f}s")
             else:
                 print(f"{algo_name:<15} | ✗ Sem solução | {result.states_explored:>12,} estados | {result.execution_time:>7.3f}s")
+        
+        # Gera gráficos se solicitado
+        if args.plot:
+            print(f"\n{'='*60}")
+            print("GERANDO GRÁFICOS")
+            print(f"{'='*60}")
+            
+            visualizer = ResultsVisualizer("plots")
+            
+            # Plota a solução se encontrada
+            for algo_name, result in results[args.n].items():
+                if result.solution_found:
+                    visualizer.plot_solution_board(
+                        result.solution.positions,
+                        title=f"Solução {algo_name} - n={args.n}"
+                    )
+                    break
+        
+        # Salva resultados se solicitado
+        if args.save:
+            timestamp = time.strftime("%Y%m%d_%H%M%S")
+            filename = f"resultado_n{args.n}_{timestamp}"
+            save_results_to_file(results, filename)
         
         print(f"\n{'='*60}")
         
