@@ -13,7 +13,7 @@ from algorithms import AStarSearch, GreedySearch
 from utils import create_results_table, save_results_to_file
 from visualization import ResultsVisualizer
 
-def run_experiments(n_values: list = None, timeout: int = 60):
+def run_experiments(n_values: list = None, timeout: int = 1200):
     """
     Executa experimentos para diferentes valores de n.
     
@@ -22,7 +22,7 @@ def run_experiments(n_values: list = None, timeout: int = 60):
         timeout: Tempo máximo por execução (segundos)
     """
     if n_values is None:
-        n_values = [4, 8, 10, 12]  # Valores recomendados para teste
+        n_values = [8, 80, 800]  # Valores recomendados para teste
     
     print("\n" + "="*80)
     print("EXPERIMENTOS - PROBLEMA DAS N-RAINHAS")
@@ -149,8 +149,8 @@ def main():
     print("Executando experimentos controlados e gerando gráficos...")
     
     # Valores para teste
-    test_values = [4, 8, 10, 12]
-    
+    test_values = [8, 80, 800]
+   
     # Para testes mais rápidos:
     # test_values = [4, 8]
     
@@ -158,7 +158,7 @@ def main():
     # test_values = [4, 8, 10, 12, 15]
     
     # Executa experimentos
-    results = run_experiments(test_values, timeout=120)
+    results = run_experiments(test_values, timeout=1200)
     
     # Analisa resultados
     analyze_results(results)

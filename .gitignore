@@ -1,3 +1,5 @@
-_pycache_
+./_pycache_/
 *.pyc
 *.pyo  
+
+./results/
